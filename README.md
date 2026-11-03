@@ -1,4 +1,4 @@
-# personal-web
+# Web Personal de Nelson Lozano
 
 Portafolio profesional de **Nelson Lozano**, Ingeniero de Software y Front End Developer.
 
