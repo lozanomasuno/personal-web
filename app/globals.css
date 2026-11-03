@@ -1,0 +1,166 @@
+@import "tailwindcss";
+
+/*
+ * Sistema visual del portafolio.
+ *
+ * Paleta base (brief): brand #3A83F7, sky #EAF4FF, ink #0D2136, mist #F5F7FA, muted #64748B.
+ * Ajustes de accesibilidad (WCAG AA, texto normal ≥ 4.5:1):
+ *  - #3A83F7 sobre blanco da 3.64:1, por eso se reserva para acentos, iconos y gráficos.
+ *    Botones y texto azul usan `brand-strong` (#2668D8, 5.18:1).
+ *  - #64748B sobre mist/sky queda por debajo de 4.5:1; los párrafos usan `body` (#475569)
+ *    y `muted` se limita a textos secundarios sobre blanco.
+ */
+@theme {
+  --color-brand: #3a83f7;
+  --color-brand-strong: #2668d8;
+  --color-brand-deep: #1f5fcc;
+  --color-sky: #eaf4ff;
+  --color-ink: #0d2136;
+  --color-mist: #f5f7fa;
+  --color-muted: #64748b;
+  --color-body: #475569;
+  --color-line: #e3e9f1;
+
+  /*
+   * Estados (dashboards). Paleta fija de estado: nunca se usa como color de serie
+   * y siempre acompaña un icono y una etiqueta de texto.
+   */
+  --color-good: #0ca30c;
+  --color-warning: #fab219;
+  --color-critical: #d03b3b;
+  /* Variaciones en texto (contraste ≥ 4.5:1 sobre su fondo tintado). */
+  --color-up: #047857;
+  --color-down: #b42318;
+
+  --shadow-soft: 0 1px 2px rgb(13 33 54 / 0.04), 0 10px 30px -14px rgb(13 33 54 / 0.14);
+  --shadow-lift: 0 2px 6px rgb(13 33 54 / 0.05), 0 28px 56px -24px rgb(13 33 54 / 0.22);
+  --shadow-glow: 0 18px 40px -16px rgb(38 104 216 / 0.45);
+
+  --ease-apple: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-float: float 8s ease-in-out infinite;
+  --animate-float-slow: float 11s ease-in-out infinite;
+  /* Entrada del hero en CSS: se ejecuta desde el primer pintado, sin esperar la hidratación. */
+  --animate-rise: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 18px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(0, -10px, 0);
+    }
+  }
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    scroll-behavior: smooth;
+    /* Compensa la altura del navbar fijo al navegar por anclas. */
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    background-color: #ffffff;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-sky);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-strong);
+    outline-offset: 3px;
+  }
+}
+
+/* Contenedor horizontal común a todas las secciones. */
+@utility shell {
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+
+  @media (width >= 40rem) {
+    padding-inline: 2rem;
+  }
+}
+
+/* Fondo del hero: degradado azul cielo → blanco con dos halos suaves. */
+@utility bg-hero {
+  background:
+    radial-gradient(48rem 28rem at 78% 8%, rgb(58 131 247 / 0.16), transparent 70%),
+    radial-gradient(40rem 24rem at 8% 0%, rgb(234 244 255 / 0.95), transparent 70%),
+    linear-gradient(180deg, #eaf4ff 0%, #f6faff 45%, #ffffff 100%);
+}
+
+/* Retícula técnica discreta que se desvanece hacia los bordes. */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(13 33 54 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(13 33 54 / 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
+}
+
+/* Superficie translúcida para tarjetas flotantes y navbar. */
+@utility glass {
+  background-color: rgb(255 255 255 / 0.72);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+}
+
+/* Select con flecha propia (reemplaza la nativa, que varía entre navegadores). */
+@utility select-chevron {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right 1rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+}
+
+/* Texto con degradado de marca; solo para titulares grandes (contraste ≥ 3:1). */
+@utility text-gradient {
+  background-image: linear-gradient(100deg, #2668d8 0%, #3a83f7 55%, #1f5fcc 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
